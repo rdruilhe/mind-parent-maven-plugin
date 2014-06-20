@@ -1,6 +1,7 @@
 /***
- * mind
+ * Mind Maven Plugins
  * Copyright (C) 2007 STMicroelectronics
+ * Copyright (C) 2014 Schneider-Electric
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,9 +17,10 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Contact: fractal@objectweb.org
+ * Contact: mind@ow2.org
  *
  * Author: Matthieu Leclercq
+ * Contributors: Julien Tous, Stephane Seyvoz
  */
 
 package org.ow2.mind.maven.plugin.mar;
