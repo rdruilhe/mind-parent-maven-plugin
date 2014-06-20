@@ -14,5 +14,6 @@
 	<module>mindadl-maven-plugin</module>
 	<module>mind-lifecycle-maven-plugin</module>
 	<module>mind-maven-archetypes-parent</module>
+	<module>mindunit-maven-plugin</module>
   </modules>
 </project>

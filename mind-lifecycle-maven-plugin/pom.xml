@@ -105,7 +105,12 @@
 			<type>maven-plugin</type>
 		</dependency>
 
-		
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>mindunit-maven-plugin</artifactId>
+			<version>${project.version}</version>
+			<type>maven-plugin</type>
+		</dependency>
 	
 		<!-- =========================================== -->
 		<!-- Maven stuff -->
