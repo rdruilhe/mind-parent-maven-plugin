@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	* This library is free software; you can redistribute it and/or
+	* modify it under the terms of the GNU Lesser General Public
+	* License as published by the Free Software Foundation; either
+	* version 2 of the License, or (at your option) any later version.
+	*
+	* This library is distributed in the hope that it will be useful,
+	* but WITHOUT ANY WARRANTY; without even the implied warranty of
+	* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	* Lesser General Public License for more details.
+	*
+	* You should have received a copy of the GNU Lesser General Public
+	* License along with this library; if not, write to the Free Software
+	* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>
+		org.ow2.mind.mind-maven-plugin.test.unpackFeatures
+	</groupId>
+	<artifactId>test-mar</artifactId>
+	<version>1.0-SNAPSHOT</version>
+
+	<build>
+		<plugins>
+			<!-- First execute 'mvn install' in mar-provider module
+			     Then, execute 'mvn package' in mar-user -->
+			<plugin>
+				<artifactId>maven-invoker-plugin</artifactId>
+				<executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <id>install-mar-provider</id>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <projectsDirectory>
+                                ${basedir}/mar-provider
+                            </projectsDirectory>
+                            <pomIncludes>
+                                <pomInclude>child-pom.xml</pomInclude>
+                            </pomIncludes>
+                            <goals>
+                                <goal>clean</goal>
+                                <goal>install</goal>
+                            </goals>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <phase>compile</phase>
+                        <id>run-mar-user</id>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <projectsDirectory>
+                                ${basedir}/mar-user
+                            </projectsDirectory>
+                            <pomIncludes>
+                                <pomInclude>child-pom.xml</pomInclude>
+                            </pomIncludes>
+                            <goals>
+                                <goal>clean</goal>
+                                <goal>package</goal>
+                            </goals>
+                        </configuration>
+                    </execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+</project>

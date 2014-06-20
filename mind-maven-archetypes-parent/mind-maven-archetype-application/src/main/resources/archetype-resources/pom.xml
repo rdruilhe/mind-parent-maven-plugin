@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<!-- 
+	Template pom.xml for Mind applications.
+	
+	Edit it to better fit your needs.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>${groupId}</groupId>
+	<artifactId>${artifactId}</artifactId>
+	<packaging>mind-application</packaging>
+	<version>${version}</version>
+
+	<!-- ============================================================ -->
+	<!--             PROPERTIES                                       -->
+	<properties>
+		<mind.version>@version@</mind.version>
+	</properties>
+	<!-- ============================================================ -->
+
+	<!-- ============================================================ -->
+	<!--             DEPENDENCIES                                     -->
+	<!-- <dependencies>
+		<dependency>
+			<groupId>org.objectweb.fractal.mind</groupId>
+			<artifactId>mind-baselib</artifactId>
+			<version>${mind.version}</version>
+			<type>mar</type>
+		</dependency>
+	</dependencies> -->
+	<!-- ============================================================ -->
+
+	<build>
+
+		<!-- ========================================================== -->
+		<!--                 PLUGINS                                    -->
+		<plugins>
+
+			<plugin>
+				<groupId>org.ow2.mind</groupId>
+				<artifactId>mind-lifecycle-maven-plugin</artifactId>
+				<extensions>true</extensions>
+				<version>${mind.version}</version>
+			</plugin>
+
+
+			<plugin>
+				<groupId>org.ow2.mind</groupId>
+				<artifactId>mar-maven-plugin</artifactId>
+				<version>${mind.version}</version>
+			</plugin>
+			
+			<!-- ==================================================== -->
+			<!-- to invoke Mind ADL Launcher -->
+			<plugin>
+				<groupId>org.ow2.mind</groupId>
+				<artifactId>mindadl-maven-plugin</artifactId>
+				<version>${mind.version}</version>
+				<configuration>
+					<adl>Main</adl>
+					<arguments>
+						<parameter>
+							<name>c-flags</name>
+							<value>"-g"</value>
+						</parameter>
+					</arguments>
+				</configuration>
+			</plugin>
+			<!-- ==================================================== -->
+		</plugins>
+	</build>
+
+
+</project>

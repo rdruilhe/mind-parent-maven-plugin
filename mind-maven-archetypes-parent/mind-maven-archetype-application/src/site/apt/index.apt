@@ -1,0 +1,65 @@
+    -----
+    Overview
+    ----
+
+Overview
+
+  The Mind Maven archetype is meant to create a minimalistic source tree 
+  structure and <<<pom.xml>>> file to build Mind applications using Maven.
+
+  In this way, you can have an already filled template that you can start 
+  modifying to suit your specific needs, but still relying on Mind 
+  application conventions and facilities, such as:
+
+    * *.c/*.h, *.idl and *.fractal files following Mind source tree conventions
+
+    * configuration of some Maven plugins developed to support Mind, such as 
+      the {{{../../../toolchain-parent/maven-mindadl-plugin/index.html}maven-mindadl-plugin}}
+      to build your main Fractal ADL definition file.
+
+  The archetype configures also the <<<repositories>>> needed to retrieve 
+  Mind artifacts that are stored remotely on the OW2 servers.
+
+Usage
+
+  To create a Mind application using this archetype, from the command line type:
+
+------------------------------------------------------
+mvn archetype:create -DarchetypeGroupId=org.objectweb.fractal.mind \
+    -DarchetypeArtifactId=maven-archetype-mind-application \
+    -DarchetypeVersion=THIS_ARCHETYPE_VERSION \
+    -DgroupId=YOUR_PROJECT_GROUPID \
+    -DartifactId=YOUR_MIND_APPLICATION_ARTIFACTID \
+    -Dversion=YOUR_MIND_APPLICATION_INITIAL_VERSION
+------------------------------------------------------
+
+  where <<<THIS_ARCHETYPE_VERSION>>> is the version of this archetype. Usually 
+  it is suggested to use as archetype version the version number of the latest 
+  Mind release.
+
+  The command will create a folder <<<YOUR_PROJECT_ARTIFACTID>>> with the 
+  project template (separation of folders and minimal working configuration of 
+  the <<<pom.xml>>>). You can of course customize the creation by passing 
+  different values for <<<YOUR_PROJECT_GROUPID>>> and 
+  <<<YOUR_PROJECT_ARTIFACTID>>>, as well as another value for your project
+  version, changing the value of the <<<-Dversion>>> property.
+
+  The archetypes provides a dumb application to show you the organization of
+  files and the execution of the compilation. Specifically, there is a composite
+  <<<Main>>> component definition (inside <<<src/main/mind>>>), which 
+  contains a sub component (implemented by <<<src/main/mind/main.c>>>) 
+  implementing the <<<{{{../../../runtime/mind-baselib/Main.html}boot.api.Main}}>>> interface.
+
+  To execute the minimalistic template application you can execute:
+
+-------------------------------------------------------
+mvn clean compile
+-------------------------------------------------------
+            
+
+  which will create an executable file in the "target" directory.
+
+More on Maven archetypes
+
+  If you want to know more about Maven archetype, you can look at the 
+  {{{http://maven.apache.org/guides/mini/guide-creating-archetypes.html}Guide to creating and using Maven archetypes}}. 

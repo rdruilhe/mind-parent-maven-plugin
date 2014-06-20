@@ -1,0 +1,33 @@
+<component-set>
+	<components>
+		<component>
+			<role>org.codehaus.plexus.archiver.UnArchiver</role>
+			<role-hint>mar</role-hint>
+			<!-- there is no implementaion of MarUnArchiver, but ZipUnArchive will do the job -->
+			<implementation>
+				org.codehaus.plexus.archiver.zip.ZipUnArchiver
+			</implementation>
+			<instantiation-strategy>per-lookup</instantiation-strategy>
+		</component>
+		<component>
+			<role>org.codehaus.plexus.archiver.Archiver</role>
+			<role-hint>mar</role-hint>
+			<!-- there is no implementaion of MarArchiver, but JarArchive will do the job -->
+			<implementation>
+				org.codehaus.plexus.archiver.jar.JarArchiver
+			</implementation>
+			<instantiation-strategy>per-lookup</instantiation-strategy>
+		</component>
+		<component>
+			<role>
+				org.codehaus.plexus.components.io.resources.PlexusIoResourceCollection
+			</role>
+			<role-hint>mar</role-hint>
+			<!-- there is no implementaion of PlexusIoJarFileResourceCollection, but PlexusIoZipFileResourceCollection will do the job -->
+			<implementation>
+				org.codehaus.plexus.components.io.resources.PlexusIoZipFileResourceCollection
+			</implementation>
+			<instantiation-strategy>per-lookup</instantiation-strategy>
+		</component>
+	</components>
+</component-set>

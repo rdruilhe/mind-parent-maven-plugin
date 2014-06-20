@@ -1,0 +1,70 @@
+import java.io.*;
+import java.net.*;
+import java.util.jar.*;
+
+try
+{
+    File packageFile = new File( basedir, "target/simple-test-mar-1.0-SNAPSHOT.mar" );
+    if (!packageFile.exists()) {
+      System.err.println("ERROR: '" + packageFile + "' does not exist");
+      return false;
+    }
+    
+    JarFile marFile = new JarFile(packageFile);
+    
+    if (marFile.getJarEntry("foo.c") == null) {
+      System.err.println("ERROR: '" + packageFile + "' does not contains foo.c");
+      return false;
+    }
+    
+    if (marFile.getJarEntry("Foo.adl") == null) {
+      System.err.println("ERROR: '" + packageFile + "' does not contains Foo.adl");
+      return false;
+    }
+    
+    if (marFile.getJarEntry("Foo.itf") == null) {
+      System.err.println("ERROR: '" + packageFile + "' does not contains Foo.itf");
+      return false;
+    }
+    
+    if (marFile.getJarEntry("foo.ignored") != null) {
+      System.err.println("ERROR: '" + packageFile + "' contains foo.ignored which should be ignored");
+      return false;
+    }
+
+    File testPackageFile = new File( basedir, "target/simple-test-mar-1.0-tests.mar" );
+    if (!packageFile.exists()) {
+      System.err.println("ERROR: '" + testPackageFile + "' does not exist");
+      return false;
+    }
+    
+    JarFile testMarFile = new JarFile(testPackageFile);
+    
+    if (testMarFile.getJarEntry("bar.c") == null) {
+      System.err.println("ERROR: '" + testPackageFile + "' does not contains foo.c");
+      return false;
+    }
+    
+    if (testMarFile.getJarEntry("Bar.adl") == null) {
+      System.err.println("ERROR: '" + testPackageFile + "' does not contains Foo.adl");
+      return false;
+    }
+    
+    if (testMarFile.getJarEntry("Bar.itf") == null) {
+      System.err.println("ERROR: '" + testPackageFile + "' does not contains Foo.itf");
+      return false;
+    }
+    
+    if (testMarFile.getJarEntry("bar.ignored") != null) {
+      System.err.println("ERROR: '" + testPackageFile + "' contains foo.ignored which should be ignored");
+      return false;
+    }
+
+}
+catch( IOException e )
+{
+    e.printStackTrace();
+    result = false;
+}
+
+return true;

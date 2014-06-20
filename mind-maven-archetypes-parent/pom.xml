@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.ow2.mind</groupId>
+		<artifactId>mind-parent-maven-plugin</artifactId>
+		<version>2.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>mind-maven-archetypes-parent</artifactId>
+	<name>Mind maven archetypes parent module</name>
+    <packaging>pom</packaging>
+
+	<description>Parent module for various Mind archetypes</description>
+
+	<!-- Because of a bug in the maven-site-plugin, the URL of the project MUST 
+		ends with a '/' which is not the case when using the basic maven
+		inheritance mechanism -->
+	<url>${mind.home.url}/${project.parent.artifactId}/${project.artifactId}/</url>
+
+	<modules>
+		<module>mind-maven-archetype-application</module>
+		<module>mind-maven-archetype-library</module>
+	</modules>
+
+	<developers>
+		<!-- TODO write developers here -->
+	</developers>
+
+	<contributors>
+		<!-- TODO write contributors here -->
+    </contributors>
+
+
+	<scm>
+		<connection>scm:svn:svn://svn.forge.objectweb.org/svnroot/fractal/tags/mind-2.1.0/maven/archetypes</connection>
+		<developerConnection>scm:svn:svn+ssh://svn.forge.objectweb.org/svnroot/fractal/tags/mind-2.1.0/maven/archetypes</developerConnection>
+		<url>http://svn.forge.objectweb.org/cgi-bin/viewcvs.cgi/fractal/tags/mind-2.1.0/maven/archetypes</url>
+	</scm>
+</project>

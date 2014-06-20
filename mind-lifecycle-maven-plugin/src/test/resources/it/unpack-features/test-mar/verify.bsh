@@ -1,0 +1,97 @@
+import java.io.*;
+import java.net.*;
+import java.util.jar.*;
+
+try
+{
+    File f;
+    if (! (f = new File(basedir, "mar-user/target/mind-dependencies/foo.c")).exists()) {
+      System.err.println("ERROR: '" + f.getPath() + "' does not exist");
+      return false;
+    }
+
+    if (! (f = new File(basedir, "mar-user/target/mind-dependencies/Foo.adl")).exists()) {
+      System.err.println("ERROR: '" + f.getPath() + "' does not exist");
+      return false;
+    }
+
+    if (! (f = new File(basedir, "mar-user/target/mind-dependencies/Foo.itf")).exists()) {
+      System.err.println("ERROR: '" + f.getPath() + "' does not exist");
+      return false;
+    }
+    
+    // -------------------------------------------------------------------------
+
+    if ((f = new File(basedir, "mar-user/target/mind-test-dependencies/foo.c")).exists()) {
+      System.err.println("ERROR: '" + f.getPath() + "' should not exist");
+      return false;
+    }
+
+    if ((f = new File(basedir, "mar-user/target/mind-test-dependencies/Foo.adl")).exists()) {
+      System.err.println("ERROR: '" + f.getPath() + "' should not exist");
+      return false;
+    }
+
+    if ((f = new File(basedir, "mar-user/target/mind-test-dependencies/Foo.itf")).exists()) {
+      System.err.println("ERROR: '" + f.getPath() + "' should not exist");
+      return false;
+    }
+
+    // -------------------------------------------------------------------------
+
+    if (! (f = new File(basedir, "mar-user/target/mind-test-dependencies/testfoo.c")).exists()) {
+      System.err.println("ERROR: '" + f.getPath() + "' does not exist");
+      return false;
+    }
+
+    if (! (f = new File(basedir, "mar-user/target/mind-test-dependencies/testFoo.adl")).exists()) {
+      System.err.println("ERROR: '" + f.getPath() + "' does not exist");
+      return false;
+    }
+
+    if (! (f = new File(basedir, "mar-user/target/mind-test-dependencies/testFoo.itf")).exists()) {
+      System.err.println("ERROR: '" + f.getPath() + "' does not exist");
+      return false;
+    }
+
+    // -------------------------------------------------------------------------
+
+    if ((f = new File(basedir, "mar-user/target/mind-dependencies/testfoo.c")).exists()) {
+      System.err.println("ERROR: '" + f.getPath() + "' should not exist");
+      return false;
+    }
+
+    if ((f = new File(basedir, "mar-user/target/mind-dependencies/testFoo.adl")).exists()) {
+      System.err.println("ERROR: '" + f.getPath() + "' should not exist");
+      return false;
+    }
+
+    if ((f = new File(basedir, "mar-user/target/mind-dependencies/testFoo.itf")).exists()) {
+      System.err.println("ERROR: '" + f.getPath() + "' should not exist");
+      return false;
+    }
+
+    // -------------------------------------------------------------------------
+
+    if (! (f = new File(basedir, "mar-user/target/classes/bar.c")).exists()) {
+      System.err.println("ERROR: '" + f.getPath() + "' does not exist");
+      return false;
+    }
+
+    if (! (f = new File(basedir, "mar-user/target/classes/Bar.adl")).exists()) {
+      System.err.println("ERROR: '" + f.getPath() + "' does not exist");
+      return false;
+    }
+
+    if (! (f = new File(basedir, "mar-user/target/classes/Bar.itf")).exists()) {
+      System.err.println("ERROR: '" + f.getPath() + "' does not exist");
+      return false;
+    }
+}
+catch( IOException e )
+{
+    e.printStackTrace();
+    return false;
+}
+
+return true;

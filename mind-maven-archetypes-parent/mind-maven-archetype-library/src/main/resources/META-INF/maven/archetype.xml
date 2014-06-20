@@ -1,0 +1,16 @@
+<archetype>
+	
+	<!-- it must match the artifactId of this maven archetype -->
+	<id>mind-maven-archetype-library</id>
+	
+	<!-- it allows to run the archetype on already created projects (at your own risk..) -->
+	<allowPartial>true</allowPartial>
+	
+	<resources>
+		<resource filtered="false">src/main/mind/packagename/ComponentInterface.itf</resource>
+		<resource>src/main/mind/packagename/ComponentDefinition.adl</resource>
+		<resource filtered="false">src/main/mind/packagename/componentImpl.c</resource>
+		<resource>README.txt</resource>
+	</resources>
+
+</archetype>

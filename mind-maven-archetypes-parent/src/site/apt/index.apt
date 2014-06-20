@@ -1,0 +1,11 @@
+    -----
+    Overview
+    -----
+
+Maven archetypes available for Mind:
+
+  * {{{maven-archetype-mind-application/index.html}maven-archetype-mind-application}}: 
+    to kick start a Mind application Maven project template
+
+  * {{{maven-archetype-mind-library/index.html}maven-archetype-mind-library}}:
+    to kick start a Mind library Maven project template

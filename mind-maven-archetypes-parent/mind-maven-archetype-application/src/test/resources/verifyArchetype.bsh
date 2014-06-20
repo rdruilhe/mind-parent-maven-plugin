@@ -1,0 +1,16 @@
+import java.io.File;
+
+
+try {
+    File app = new File( basedir, "target/build/obj/main");
+    
+    Runtime runtime = Runtime.getRuntime();
+    Process p = runtime.exec(app.getAbsolutePath());
+    int r = p.waitFor();
+    return r == 0;
+
+} catch(Exception e) {
+    e.printStackTrace();
+    return false;
+}
+

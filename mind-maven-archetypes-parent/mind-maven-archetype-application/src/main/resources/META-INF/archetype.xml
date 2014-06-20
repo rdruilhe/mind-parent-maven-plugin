@@ -1,0 +1,15 @@
+<archetype>
+	
+	<!-- it must match the artifactId of this maven archetype -->
+	<id>mind-app</id>
+	
+	<!-- it allows to run the archetype on already created projects (at your own risk..) -->
+	<allowPartial>true</allowPartial>
+	
+	<resources>
+		<resource filtered="false">src/main/mind/main.c</resource>
+		<resource>src/main/mind/Main.adl</resource>
+		<resource>README.txt</resource>
+	</resources>
+
+</archetype>

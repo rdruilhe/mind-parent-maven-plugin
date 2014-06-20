@@ -1,0 +1,121 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.ow2.mind</groupId>
+		<artifactId>mind-parent-maven-plugin</artifactId>
+		<version>2.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>mind-lifecycle-maven-plugin</artifactId>
+	<name>Mind lifecycle maven plugin</name>
+	<description>description of the life cycle for mind-application and mind-library</description>
+	<build>
+
+		<resources>
+			<resource>
+				<filtering>true</filtering>
+				<directory>${basedir}/src/main/resources</directory>
+			</resource>
+		</resources>
+
+		<pluginManagement>
+		<plugins>
+				<!-- Use an ant script to copy and make the replacement in the META-INF/maven/plugin.xml 
+					file. -->      
+			<plugin>
+			<groupId>org.ow2.mind</groupId>
+			<artifactId>mind-lifecycle-maven-plugin</artifactId>
+			<version>2.1-SNAPSHOT</version>
+			<extensions>true</extensions>
+			</plugin>
+            <plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>process plugin.xml</id>
+							<phase>process-resources</phase>
+							<configuration>
+								<tasks>
+
+									<copy file="${basedir}/src/main/maven/plugin.xml"
+										todir="${project.build.outputDirectory}/META-INF/maven"
+										overwrite="true" />
+									<replace
+										file="${project.build.outputDirectory}/META-INF/maven/plugin.xml"
+										summary="true">
+										<replacefilter token="@groupId@" value="${project.groupId}" />
+										<replacefilter token="@artifactId@" value="${project.artifactId}" />
+										<replacefilter token="@version@" value="${project.version}" />
+									</replace>
+									<replace
+										file="${project.build.outputDirectory}/META-INF/plexus/components.xml"
+										summary="true">
+										<replacefilter token="@mar.version@" value="${project.version}" />
+									</replace>
+								</tasks>
+							</configuration>
+							<goals>
+								<goal>run</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>process IT POMs</id>
+							<phase>pre-integration-test</phase>
+							<configuration>
+								<tasks>
+									<replace dir="${project.build.testOutputDirectory}/it"
+										includes="**/*pom.xml" token="@version@" value="${project.version}"
+										summary="true" />
+								</tasks>
+							</configuration>
+							<goals>
+								<goal>run</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+            	        <artifactId>maven-plugin-plugin</artifactId>
+            	        <version>3.1</version>
+  	            	<configuration>
+                		<skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+        	    	</configuration>
+			</plugin>
+			</plugins>
+			</pluginManagement>
+ 	</build>
+
+	<dependencies>
+	
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>mar-maven-plugin</artifactId>
+			<version>${project.version}</version>
+			<type>maven-plugin</type>
+		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>mindadl-maven-plugin</artifactId>
+			<version>${project.version}</version>
+			<type>maven-plugin</type>
+		</dependency>
+
+		
+	
+		<!-- =========================================== -->
+		<!-- Maven stuff -->
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-dependency-plugin</artifactId>
+			<version>2.0</version>
+		</dependency>
+		<!-- ============================================ -->
+	</dependencies>
+	<!--packaging>maven-plugin</packaging-->
+	<packaging>maven-plugin</packaging>
+</project>

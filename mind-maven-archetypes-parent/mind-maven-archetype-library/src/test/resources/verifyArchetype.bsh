@@ -1,0 +1,14 @@
+import java.io.File;
+
+
+try {
+    
+    /* the packaged "mar" file */
+    File mar = new File( basedir, "target/test-module-1.0-SNAPSHOT.mar");
+    
+    return mar.exists();
+    
+}catch(Exception e){
+  e.printStackTrace();
+  return false;
+}

@@ -1,0 +1,61 @@
+         -------------
+     Overview
+         -------------
+
+Overview
+
+  The Mind Library Maven archetype is meant to create a minimalistic source 
+  tree structure and <<<pom.xml>>> file to develop component libraries to be 
+  re-used as dependencies by Mind applications (see 
+  {{{../maven-archetype-mind-application/index.html}Mind application archetype}}
+  for informations on how to quick start Mind applications).
+
+  In few words this mean that you will have already a Maven project setup to be
+  able to package your component library as a "Mind ARchive" (car) package 
+  and be able to let Mind applications depend on it. See for example how the
+  Mind HelloWorld example depends on the "mind-baselib" module, which is a
+  minimalistic component library.
+
+  In this way, you can have an already filled template that you can start 
+  modifying to suit your specific needs, but still relying on Mind projects
+  conventions and facilities
+
+  The archetype configures also the repositories needed to retrieve Mind 
+  artifacts that are stored remotely on the OW2 servers.
+
+Usage
+
+  To create a Mind library project using this archetype, from the command line type:
+
+-----------------------------------
+mvn archetype:create -DarchetypeGroupId=org.objectweb.fractal.mind \
+    -DarchetypeArtifactId=maven-archetype-mind-library \
+    -DarchetypeVersion=THIS_ARCHETYPE_VERSION \
+    -DgroupId=YOUR_PROJECT_GROUPID \
+    -DartifactId=YOUR_MIND_LIBRARY_ARTIFACTID \
+    -Dversion=YOUR_MIND_LIBRARY_VERSION
+-----------------------------------
+
+  where <<<THIS_ARCHETYPE_VERSION>>> is the version of this archetype. Usually 
+  it is suggested to use as archetype version the version number of the latest 
+  Mind release.
+
+  The command will create a folder <<<YOUR_PROJECT_ARTIFACTID>>> with the 
+  project template (folders template structure and minimal working configuration
+  of the <<<pom.xml>>>). You can of course customize the creation by passing 
+  different values for <<<YOUR_PROJECT_GROUPID>>> and 
+  <<<YOUR_PROJECT_ARTIFACTID>>>, as well as another value for your project 
+  version, changing the value of the <<<-Dversion>>> property.
+
+  The archetype create a component library with one component providing an interface, to show you the organization of files and the execution of the packaging by means of the execution of:
+
+-----------------------------------
+mvn clean install
+-----------------------------------
+            
+  which will make a .car (Mind ARchive) file in the "target" directory.
+
+More on Maven archetypes
+
+  If you want to know more about Maven archetype, you can look at the 
+  {{{http://maven.apache.org/guides/mini/guide-creating-archetypes.html}Guide to creating and using Maven archetypes}}. 
