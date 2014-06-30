@@ -20,20 +20,26 @@
  Contact: fractal@objectweb.org, mind@ow2.org
  Author:  Alessio Pace
  Contributor: Stephane Seyvoz 
+ Contributor: Remi Druilhe
  */
 
 package org.ow2.mind.adl.maven.plugin;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Execute;
+//import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -68,20 +74,20 @@ public class MindAdlMojo extends AbstractMojo {
 	 * The fully qualified name of the component ADL definition to compile.
 	 */
 	@Parameter
-	protected String       adl;
+	protected String	 adl;
 
 	/**
 	 * The list of fully qualified name of the component ADL definitions to
 	 * compile.
 	 */
 	@Parameter
-	protected List<?>      adls;
+	protected List<?>	 adls;
 
 	/**
 	 * The output directory for the files produced by Mind ADL.
 	 */
-	@Parameter(defaultValue = "${project.build.directory}/build")
-	protected String       outDir;
+	@Parameter(defaultValue = "${project.build.directory}/Default")
+	protected String     outputDir;
 
 	/**
 	 * The name of the target descriptor to use.
@@ -90,15 +96,76 @@ public class MindAdlMojo extends AbstractMojo {
 	private String       target;
 
 	/**
-	 * 
+	 * The source folders
+	 */
+	@Parameter(defaultValue = "src/main/mind")
+	private String 		includeSrcPath;
+
+	/**
+	 * The test folders
+	 */
+	@Parameter(defaultValue = "src/test/mind")
+	private String 		includeTestPath;
+
+	/**
+	 * The include folders
+	 */
+	@Parameter(defaultValue = "src/main/include")
+	private String 		includeIncPath;
+
+	/**
+	 * Binary name
 	 */
 	@Parameter
-	protected List<?>      arguments;
+	private String 		binaryName;
+
+	/**
+	 * Extra options to use with mindc
+	 */
+	@Parameter
+	private String 		extraOptions;
+
+	/**
+	 * Property file
+	 */
+	@Parameter(defaultValue = "Default.properties")
+	private String		propertyFile;
+
+	/**
+	 * Compiler command and flags;
+	 */
+	@Parameter
+	private HashMap<?,?>		compiler;
+
+	/**
+	 * Linker command and flags;
+	 */
+	@Parameter
+	private HashMap<?,?>		linker;
+
+	/**
+	 * Assembler command and flags;
+	 */
+	@Parameter
+	private HashMap<?,?>		assembler;
+
+	/**
+	 * Others arguments
+	 */
+	@Parameter
+	protected List<?>	arguments;
 
 	/**
 	 *
 	 */
 	protected List<String> allOrderedArguments = null;
+
+	private PathBuilder srcPathBuilder = null;
+	private PathBuilder incPathBuilder = null;
+
+	private CompileTool compilerTool = null;
+	private CompileTool linkerTool = null;
+	private CompileTool assemblerTool = null;
 
 	protected void addArgIfNotPresent(List<String> args, String argName,
 			String argValue) {
@@ -117,15 +184,131 @@ public class MindAdlMojo extends AbstractMojo {
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
 
-		if (allOrderedArguments == null) {
+		if (allOrderedArguments == null)
 			allOrderedArguments = new ArrayList<String>();
+
+		if (srcPathBuilder == null)
+			srcPathBuilder = new PathBuilder();
+
+		if (incPathBuilder == null)
+			incPathBuilder = new PathBuilder();
+
+		if (compilerTool == null && compiler != null)
+			compilerTool = new CompileTool(compiler);
+
+		if (linkerTool == null && linker != null)
+			linkerTool = new CompileTool(linker);
+
+		if (assemblerTool == null && assembler != null)
+			assemblerTool = new CompileTool(assembler);
+
+		File propFile = new File(project.getBasedir(), propertyFile);
+
+		if(propFile.exists())
+		{
+			getLog().warn("Property file exists. Overwritting MindAdl Maven plugin configuration section.");
+
+			Properties properties = new Properties();
+
+			try {
+				FileInputStream fis = new FileInputStream(propFile);
+				properties.load(fis);							
+			} catch (FileNotFoundException e) {
+				getLog().info("Unable to find " + propertyFile);
+				e.printStackTrace();
+			} catch (IOException e) {
+				getLog().info("Unable to open " + propertyFile);
+				e.printStackTrace();
+			}
+
+			if(!properties.getProperty("sourcePath").isEmpty())
+				srcPathBuilder.addToPath(properties.getProperty("sourcePath"));
+
+			if(!properties.getProperty("testSourcePath").isEmpty())
+				srcPathBuilder.addToPath(properties.getProperty("testSourcePath"));
+
+			if(!properties.getProperty("includePath").isEmpty()) 
+				incPathBuilder.addToPath(properties.getProperty("includePath"));
+
+			if(!properties.getProperty("outputDirectory").isEmpty())
+				outputDir = properties.getProperty("outputDirectory");
+
+			if(!properties.getProperty("compilerCommand").isEmpty())
+				addArg(allOrderedArguments, "compiler-command", properties.getProperty("compilerCommand"));
+			
+			if(!properties.getProperty("cFlags").isEmpty())
+				addArg(allOrderedArguments, "c-flags", properties.getProperty("cFlags"));
+
+			if(!properties.getProperty("linkerCommand").isEmpty())
+				addArg(allOrderedArguments, "linker-command", properties.getProperty("linkerCommand"));
+			
+			if(!properties.getProperty("ldFlags").isEmpty())
+				addArg(allOrderedArguments, "ld-flags", properties.getProperty("ldFlags"));
+
+			if(!properties.getProperty("assemblerCommand").isEmpty())
+				addArg(allOrderedArguments, "assembler-command", properties.getProperty("assemblerCommand"));
+			
+			if(!properties.getProperty("asFlags").isEmpty())
+				addArg(allOrderedArguments, "as-flags", properties.getProperty("asFlags"));
+		} else {
+			getLog().debug("Properties " + arguments);
+
+			/* Handle --srcPath argument */
+			if(includeSrcPath != null)
+				srcPathBuilder.addToPath(includeSrcPath);
+
+			/* Handle --testPath argument */
+			if(includeTestPath != null)
+				srcPathBuilder.addToPath(includeTestPath);
+
+			/* Handle --incPath argument */
+			if(includeIncPath != null)
+				incPathBuilder.addToPath(includeIncPath);
+
+			/* Handle compilation tools */
+			if(compilerTool.getCommand() != null)
+				addArg(allOrderedArguments, "compiler-command", compilerTool.getCommand());
+
+			if(compilerTool.getFlags() != null)
+				addArg(allOrderedArguments, "c-flags", compilerTool.getFlags());
+
+			if(linkerTool.getCommand() != null)
+				addArg(allOrderedArguments, "linker-command", linkerTool.getCommand());
+
+			if(linkerTool.getFlags() != null)
+				addArg(allOrderedArguments, "ld-flags", linkerTool.getFlags());
+
+			if(assemblerTool.getCommand() != null)
+				addArg(allOrderedArguments, "assembler-command", assemblerTool.getCommand());
+
+			if(assemblerTool.getFlags() != null)
+				addArg(allOrderedArguments, "as-flags", assemblerTool.getFlags());
 		}
 
+		//		if (allOrderedArguments.contains("--check-adl")) {
+		//			// add by default the project sources directory in the toolchain
+		//			// src-path (this way, the project .c and .itf will be found.
+		//			addArg(allOrderedArguments, "src-path", project.getBasedir()
+		//					.getPath() + "/src/main/mind");
+		//		}
+		//		else {
+		//			// add by default the project build output directory in the toolchain
+		//			// src-path (this way, the project .c and .itf will be found.
+		//			addArg(allOrderedArguments, "src-path", project.getBuild()
+		//					.getOutputDirectory());
+		//		}
+
+		/* Handle ADL file */
 		if (adl != null) {
 			if (adls != null)
 				throw new RuntimeException(
 						"<adl> and <adls> tags cannot be used in the same time.");
+
 			getLog().debug("Compiling architecture: " + adl);
+
+			if(binaryName != null)
+				adl = adl + ":" + binaryName;
+
 			allOrderedArguments.add(adl);
 		} else {
 			if (adls == null)
@@ -146,36 +329,26 @@ public class MindAdlMojo extends AbstractMojo {
 			}
 		}
 
-		getLog().debug("Properties " + arguments);
-
-		
-		// add by default the project sources directory in the toolchain
-		// src-path (this way, the project .c and .itf will be found.
-		addArg(allOrderedArguments, "src-path", project.getBasedir()
-				.getPath() + "/src/main/mind");
-		
-//		if (allOrderedArguments.contains("--check-adl")) {
-//			// add by default the project sources directory in the toolchain
-//			// src-path (this way, the project .c and .itf will be found.
-//			addArg(allOrderedArguments, "src-path", project.getBasedir()
-//					.getPath() + "/src/main/mind");
-//		}
-//		else {
-//			// add by default the project build output directory in the toolchain
-//			// src-path (this way, the project .c and .itf will be found.
-//			addArg(allOrderedArguments, "src-path", project.getBuild()
-//					.getOutputDirectory());
-//		}
 
 		File dep = new File(project.getBasedir(), "target/mind-dependencies");
 		if (dep.isDirectory()) {
-			addArg(allOrderedArguments, "src-path", dep.getPath());
+			srcPathBuilder.addToPath("target/mind-dependencies");
 		}
 
-		/* creates the output dir if necessary */
-		Util.createOutDirIfNecessary(outDir);
+		if(!srcPathBuilder.getPaths().isEmpty())
+			addArg(allOrderedArguments, "src-path", srcPathBuilder.getPaths());
 
-		/* append the other parameters */
+		if(!incPathBuilder.getPaths().isEmpty())
+			addArg(allOrderedArguments, "inc-path", incPathBuilder.getPaths());
+
+		/* Handle extra options of Mindc */
+		if(extraOptions != null) 
+			allOrderedArguments.add(extraOptions);
+
+		/* Creates the output directory if necessary */
+		Util.createOutDirIfNecessary(outputDir);
+
+		/* Append the other parameters */
 		if (arguments != null) {
 			for (Object argument : arguments) {
 				if (!(argument instanceof MindAdlLauncherArguments)) {
@@ -193,17 +366,16 @@ public class MindAdlMojo extends AbstractMojo {
 			}
 		}
 
-		// add the "out-path" parameter
-		addArg(allOrderedArguments, "out-path", outDir);
+		// Add the "out-path" parameter
+		addArg(allOrderedArguments, "out-path", outputDir);
 
-		// add the "target-descriptor" parameter (if any)
+		// Add the "target-descriptor" parameter (if any)
 		if (target != null)
 			addArg(allOrderedArguments, "target-descriptor", target);
 
 		final String[] args = allOrderedArguments.toArray(new String[0]);
-		getLog().debug(
-				"Invoking Mind ADL Launcher with the following command line parameters: "
-						+ Arrays.deepToString(args));
+
+		getLog().info("Invoking Mind ADL Launcher with the following command line parameters: " + Arrays.deepToString(args));
 
 		try {
 			new MojoLauncher(args);
