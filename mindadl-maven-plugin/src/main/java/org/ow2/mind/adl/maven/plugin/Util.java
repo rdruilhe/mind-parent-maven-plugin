@@ -1,7 +1,7 @@
 /**
  Copyright 2007 INRIA
  Copyright 2014 Schneider-Electric
- 
+
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either
@@ -16,7 +16,7 @@
  License along with this library; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
  USA
- 
+
  Contact: fractal@objectweb.org, mind@ow2.org
  Author:  Alessio Pace
  Contributor: Stephane Seyvoz 
@@ -32,21 +32,22 @@ import java.io.File;
  */
 public class Util {
 
-  public static void createOutDirIfNecessary(String outputDirectoryPath)
-      throws RuntimeException {
-    File outDir = new File(outputDirectoryPath);
+	public static void createOutDirIfNecessary(String outputDirectoryPath)
+			throws RuntimeException {
+		File outDir = new File(outputDirectoryPath);
 
-    if (outDir.exists()) {
-      if (!outDir.isDirectory()) {
-        throw new RuntimeException(
-            "There is a file with the same name of the chosen output directory, remove it or specify another output directory name");
-      }// else DO NOTHING
-    } else {
-      boolean created = outDir.mkdir();
-      if (!created) {
-        throw new RuntimeException("Unable to create folder " + outDir);
-      } // else DO NOTHING
-    }
+		if (outDir.exists()) {
+			if (!outDir.isDirectory()) {
+				throw new RuntimeException(
+						"There is a file with the same name of the chosen output directory, remove it or specify another output directory name");
+			}// else DO NOTHING
+		} else {
+			boolean created = outDir.mkdir();
+			
+			if (!created) {
+				throw new RuntimeException("Unable to create folder " + outDir);
+			} // else DO NOTHING
+		}
 
-  }
+	}
 }

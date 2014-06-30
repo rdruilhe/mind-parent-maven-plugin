@@ -24,7 +24,7 @@
 
 package org.ow2.mind.adl.maven.plugin;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -41,9 +41,9 @@ import org.apache.maven.plugin.MojoFailureException;
 public class MindAdlCheckMojo extends MindAdlMojo {
 
   public void execute() throws MojoExecutionException, MojoFailureException {
-    allOrderedArguments = new ArrayList<String>();
+    CommandBuilder commandBuilder = new CommandBuilder();
     
-    allOrderedArguments.add("--check-adl");
+    commandBuilder.addArgWithoutPrefix("--check-adl");
     
     super.execute();
   }

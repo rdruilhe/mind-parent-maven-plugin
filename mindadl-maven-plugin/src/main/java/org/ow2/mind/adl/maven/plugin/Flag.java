@@ -34,16 +34,17 @@ import org.apache.maven.project.MavenProject;
  * @author leclercm
  */
 public class Flag implements MindAdlLauncherArguments {
-  private String name;
+	private String name;
 
-  public List<String> getArguments(MavenProject project) {
-    List<String> result = new ArrayList<String>(1);
-    result.add(this.toString());
-    return result;
-  }
+	public List<String> getArguments(MavenProject project) {
+		List<String> result = new ArrayList<String>(1);
+		
+		result.add(this.toString());
+		
+		return result;
+	}
 
-  public String toString() {
-    return ARGUMENT_PREFIX + name;
-  }
-
+	public String toString() {
+		return ARGUMENT_PREFIX + name;
+	}
 }

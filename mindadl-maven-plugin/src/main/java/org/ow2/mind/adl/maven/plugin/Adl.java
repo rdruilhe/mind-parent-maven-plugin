@@ -30,18 +30,19 @@ package org.ow2.mind.adl.maven.plugin;
  * @contributor seyvozs
  */
 public class Adl {
-  private String definition;
-  private String execname;
+	private String definition;
+	private String execname;
 
-  public String toString() {
-    // Check the correctness of the definition name.
-    if (definition.contains(":")) {
-      throw new RuntimeException("A <definition> name cannot contain ':'.");
-    }
-    if (execname == null) {
-      return definition + ':';
-    } else {
-      return definition + ':' + execname;
-    }
-  }
+	public String toString() {
+		// Check the correctness of the definition name.
+		if (definition.contains(":")) {
+			throw new RuntimeException("A <definition> name cannot contain ':'.");
+		}
+		
+		if (execname == null) {
+			return definition + ':';
+		} else {
+			return definition + ':' + execname;
+		}
+	}
 }
