@@ -43,19 +43,19 @@ import org.apache.maven.project.MavenProjectHelper;
 public class DefaultMindResourcesMojo extends AbstractMojo {
 
   public static final String[] DEFAULT_INCLUDES = {"**/*.adl", "**/*.itf",
-      "**/*.c", "**/*.h", "**/*.s", "**/*.S"    };
+      "**/*.c", "**/*.h", "**/*.s", "**/*.S", "**/*.ld", "**/*.idt"};
   public static final String[] DEFAULT_EXCLUDES = {};
 
   /**
    * The directory containing the mind sources
    * 
-   * @parameter default-value="${basedir}/src/main/mind"
+   * @parameter default-value="${basedir}/src/main"
    * @required
    */
   private File                 mindDirectory;
 
   /**
-   * The included resources. (default is *.adl, *.itf, *.c, *.h, *.s, *.S).
+   * The included resources. (default is *.adl, *.itf, *.c, *.h, *.s, *.S, *.ld, *.idt).
    * 
    * @parameter
    */
