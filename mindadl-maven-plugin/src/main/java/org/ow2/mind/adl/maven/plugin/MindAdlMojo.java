@@ -27,6 +27,7 @@ package org.ow2.mind.adl.maven.plugin;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -168,13 +169,13 @@ public class MindAdlMojo extends AbstractMojo {
 
 		commandBuilder = new CommandBuilder();
 
-		File file = new File(project.getBasedir(), propertyFile);
+//		File file = new File(project.getBasedir(), propertyFile);
 
-		if(file.exists())
+		if((new File(project.getBasedir(), propertyFile)).exists())
 		{
 			getLog().warn("Property file exists. Overwritting MindAdl Maven plugin configuration section.");
 
-			PropertyFile propFile = new PropertyFile(file);
+			PropertyFile propFile = new PropertyFile(new File(project.getBasedir(), propertyFile));
 
 			commandBuilder = propFile.createCommandBuilder(commandBuilder);
 		} else {
@@ -196,7 +197,9 @@ public class MindAdlMojo extends AbstractMojo {
 				if (adls == null)
 					throw new RuntimeException(
 							"At least one <adl> or <adls> tag must be specified.");
+				
 				getLog().debug("Compiling architecture: " + adls);
+				
 				/* the first argument is the ADL to be compiled */
 				for (Object adlName : adls) {
 					if (!(adlName instanceof Adl)) {
@@ -207,13 +210,15 @@ public class MindAdlMojo extends AbstractMojo {
 										+ "      <execname>exec file name</execname>\n"
 										+ "    </adl>\n" + "    ...\n" + "  </adls>");
 					}
+					
 					commandBuilder.addArgWithoutPrefix(adlName.toString());
 				}
 			}
 
 			/* Handle --srcPath argument */
-			if(includeSrcPath != null)
+			if(includeSrcPath != null) {				
 				commandBuilder.addToSrcPath(includeSrcPath);
+			}
 
 			/* Handle --testPath argument */
 			if(includeTestPath != null)
@@ -234,7 +239,36 @@ public class MindAdlMojo extends AbstractMojo {
 				commandBuilder.addArg("c-flags", compilerTool.getFlags());
 
 			if (linker != null)
+			{
 				linkerTool = new CompileTool(linker);
+				
+				if(linker.get("script") != null)
+					linkerTool.addFlag(" -T" + ((String) linker.get("script")));
+				else {
+					FilesSearch startupFiles = new FilesSearch("target/mind-dependencies/startup", "([^\\s]+(\\.(?i)(ld))$)");
+					
+					List<File> files = startupFiles.getFilesList();
+					
+					if(files.size() > 1) {
+						getLog().error("Too much link scripts found:");
+						
+						for(File file : files)
+							getLog().error(file.getAbsolutePath());
+					}
+					else if(files.size() == 1)
+						linkerTool.addFlag("-T" + files.get(0).getAbsolutePath());
+					else
+						getLog().info("No link script found");
+				}
+				
+				FilesSearch libFiles = new FilesSearch("target/mind-dependencies", "([^\\s]+(\\.(?i)(a))$)");
+				
+				for(File directory : libFiles.getDirectoriesList())
+					linkerTool.addFlag("-L" + directory.getAbsolutePath());
+				
+				for(File file : libFiles.getFilesList())
+					linkerTool.addFlag("-l" + file.getName().replace("lib", "").replace(".a", ""));
+			}
 
 			if(linkerTool.getCommand() != null)
 				commandBuilder.addArg("linker-command", linkerTool.getCommand());
@@ -294,26 +328,23 @@ public class MindAdlMojo extends AbstractMojo {
 		//					.getOutputDirectory());
 		//		}
 
-		/* Automatic informations added to the CommandBuilder (e.g., mind dependencies) */
+		/* Automatic informations added to the CommandBuilder (e.g., mind dependencies paths) */
 
 		File dep = new File(project.getBasedir(), "target/mind-dependencies");
 
 		if (dep.isDirectory()) {
-			commandBuilder.addToSrcPath("target/mind-dependencies");
+			commandBuilder.addToSrcPath(new File("target/mind-dependencies/mind"));
 			
 			PathDependencies srcPathDependencies =  new PathDependencies();
 
-			srcPathDependencies.explorePathDependencies("target/mind-dependencies", "c|adl|itf");
-
-			commandBuilder.addToSrcPath(srcPathDependencies.getPathDependencies());
+			// Looking for all directories containing .c files
+			commandBuilder.addToSrcPath(srcPathDependencies.getPathDependencies("target/mind-dependencies", "([^\\s]+(\\.(?i)(c))$)"));
 
 			PathDependencies incPathDependencies =  new PathDependencies();
 
-			incPathDependencies.explorePathDependencies("target/mind-dependencies", "h");
-
-			commandBuilder.addToIncPath(incPathDependencies.getPathDependencies());
+			// Looking for all directories containing .h files
+			commandBuilder.addToIncPath(incPathDependencies.getPathDependencies("target/mind-dependencies", "([^\\s]+(\\.(?i)(h))$)"));
 		}
-
 
 		final String[] args = commandBuilder.getArguments().toArray(new String[0]);
 

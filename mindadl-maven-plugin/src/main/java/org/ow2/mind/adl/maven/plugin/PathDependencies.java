@@ -1,6 +1,7 @@
 package org.ow2.mind.adl.maven.plugin;
 
 import java.io.File;
+import java.util.List;
 
 public class PathDependencies {
 	private PathBuilder pathBuilder;
@@ -9,7 +10,7 @@ public class PathDependencies {
 		pathBuilder = new PathBuilder();
 	}
 	
-	protected void explorePathDependencies(String root, String fileExtension) {
+	private void explorePathDependencies(String root, String pattern) {
 		File rootNode = new File(root);
 		boolean matching = false;
 				
@@ -17,20 +18,21 @@ public class PathDependencies {
 			return;
 		
 		for(File node : rootNode.listFiles()) {
-			// Regular expression to check file extension
-			if(node.getName().matches("([^\\s]+(\\.(?i)(" + fileExtension + "))$)") && !matching) 
+			if(node.getName().matches(pattern) && !matching) 
 				matching = true;
 			else if(node.isDirectory())
-				this.explorePathDependencies(node.getAbsolutePath(), fileExtension);
+				explorePathDependencies(node.getAbsolutePath(), pattern);
 		}
 
 		if(matching)
-			pathBuilder.addToPath(rootNode.getAbsolutePath());
+			pathBuilder.addToPath(rootNode);
 		
 		return;
 	}
 	
-	protected String getPathDependencies () {
+	protected List<File> getPathDependencies(String root, String pattern) {
+		explorePathDependencies(root, pattern);
+		
 		return pathBuilder.getPaths();
 	}
 }

@@ -1,5 +1,6 @@
 package org.ow2.mind.adl.maven.plugin;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,17 +34,37 @@ public class CommandBuilder {
 				+ MindAdlLauncherArguments.ARGUMENT_NAME_VALUE_SEPARATOR + argValue);
 	}
 	
-	protected void addToSrcPath(String path) {
+	protected void addToSrcPath(String paths) {
+		for(String path : paths.split(":"))
+			srcPathBuilder.addToPath(new File(path));
+	}
+	
+	protected void addToSrcPath(File path) {
 		srcPathBuilder.addToPath(path);
 	}
 	
-	protected void addToIncPath(String path) {
+	protected void addToSrcPath(List<File> paths) {
+		for(File path : paths)
+			srcPathBuilder.addToPath(path);
+	}
+	
+	protected void addToIncPath(String paths) {
+		for(String path : paths.split(":"))
+			srcPathBuilder.addToPath(new File(path));
+	}
+	
+	protected void addToIncPath(File path) {
 		incPathBuilder.addToPath(path);
 	}
 	
+	protected void addToIncPath(List<File> paths) {
+		for(File path : paths)
+			srcPathBuilder.addToPath(path);
+	}
+	
 	protected List<String> getArguments() {
-		addArg("src-path", srcPathBuilder.getPaths());
-		addArg("inc-path", incPathBuilder.getPaths());
+		addArg("src-path", srcPathBuilder.pathsToString());
+		addArg("inc-path", incPathBuilder.pathsToString());
 		
 		return allOrderedArguments;
 	}

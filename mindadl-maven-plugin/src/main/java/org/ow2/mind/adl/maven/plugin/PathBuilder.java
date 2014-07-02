@@ -1,22 +1,35 @@
 package org.ow2.mind.adl.maven.plugin;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 public class PathBuilder {
 
-	private StringBuilder strBuilder;
+	private List<File> paths;
 	private static final char PATH_SEPARATOR = ':';
-	
-	public PathBuilder() {
-		strBuilder = new StringBuilder();
+
+	protected PathBuilder() {
+		paths = new ArrayList<File>();
+	}
+
+	protected void addToPath(File path) {
+		paths.add(path);
+	}
+
+	protected List<File> getPaths() {
+		return paths;
 	}
 	
-	public void addToPath(String path) {
-		if (strBuilder.toString().isEmpty())
-			strBuilder.append(path);
-		else
-			strBuilder.append(PATH_SEPARATOR + path);
-	}
-	
-	public String getPaths() {
+	protected String pathsToString() {
+		StringBuilder strBuilder = new StringBuilder();
+
+		for(File path : paths)
+			if (strBuilder.toString().isEmpty())
+				strBuilder.append(path.getAbsolutePath());
+			else
+				strBuilder.append(PATH_SEPARATOR + path.getAbsolutePath());
+
 		return strBuilder.toString();
 	}
 }

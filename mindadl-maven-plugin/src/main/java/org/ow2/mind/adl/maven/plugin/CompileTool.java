@@ -6,7 +6,7 @@ public class CompileTool {
 	private String command = null;
 	private String flags = null;
 	
-	public CompileTool(HashMap<?,?> map) {
+	protected CompileTool(HashMap<?,?> map) {
 	
 		if(map.get("command") != null)
 			if(!map.get("command").toString().isEmpty())
@@ -17,11 +17,15 @@ public class CompileTool {
 				flags = map.get("flags").toString();
 	}
 	
-	public String getCommand() {
+	protected void addFlag(String flag) {
+		flags = flags + " " + flag;
+	}
+	
+	protected String getCommand() {
 		return command;
 	}
 	
-	public String getFlags() {
+	protected String getFlags() {
 		return flags;
 	}
 }
