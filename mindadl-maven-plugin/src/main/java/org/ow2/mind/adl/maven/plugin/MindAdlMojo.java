@@ -81,7 +81,7 @@ public class MindAdlMojo extends AbstractMojo {
 	/**
 	 * The output directory for the files produced by Mind ADL.
 	 */
-	@Parameter(defaultValue = "${project.build.directory}/Default")
+	@Parameter(defaultValue = "${project.build.directory}/build")
 	protected String     outputDir;
 
 	/**
@@ -150,26 +150,11 @@ public class MindAdlMojo extends AbstractMojo {
 
 	private CommandBuilder commandBuilder = null;
 
-	//	protected void addArgIfNotPresent(List<String> args, String argName,
-	//			String argValue) {
-	//		argName = MindAdlLauncherArguments.ARGUMENT_PREFIX + argName;
-	//		for (String arg : args) {
-	//			if (arg.startsWith(argName)) return;
-	//		}
-	//		args.add(argName
-	//				+ MindAdlLauncherArguments.ARGUMENT_NAME_VALUE_SEPARATOR + argValue);
-	//	}
-	//
-	//	protected void addArg(List<String> args, String argName, String argValue) {
-	//		args.add(MindAdlLauncherArguments.ARGUMENT_PREFIX + argName
-	//				+ MindAdlLauncherArguments.ARGUMENT_NAME_VALUE_SEPARATOR + argValue);
-	//	}
-
 	public void execute() throws MojoExecutionException, MojoFailureException {
 
 		commandBuilder = new CommandBuilder();
 
-//		File file = new File(project.getBasedir(), propertyFile);
+		//		File file = new File(project.getBasedir(), propertyFile);
 
 		if((new File(project.getBasedir(), propertyFile)).exists())
 		{
@@ -197,9 +182,9 @@ public class MindAdlMojo extends AbstractMojo {
 				if (adls == null)
 					throw new RuntimeException(
 							"At least one <adl> or <adls> tag must be specified.");
-				
+
 				getLog().debug("Compiling architecture: " + adls);
-				
+
 				/* the first argument is the ADL to be compiled */
 				for (Object adlName : adls) {
 					if (!(adlName instanceof Adl)) {
@@ -210,7 +195,7 @@ public class MindAdlMojo extends AbstractMojo {
 										+ "      <execname>exec file name</execname>\n"
 										+ "    </adl>\n" + "    ...\n" + "  </adls>");
 					}
-					
+
 					commandBuilder.addArgWithoutPrefix(adlName.toString());
 				}
 			}
@@ -241,17 +226,28 @@ public class MindAdlMojo extends AbstractMojo {
 			if (linker != null)
 			{
 				linkerTool = new CompileTool(linker);
-				
+
+				FilesSearch libFiles = new FilesSearch("target/mind-dependencies", "([^\\s]+(\\.(?i)(a|o))$)");
+
+				for(File directory : libFiles.getDirectoriesList())
+					linkerTool.addFlag("-L" + directory.getAbsolutePath());
+
+				for(File file : libFiles.getFilesList())
+					if(file.getName().endsWith(".a"))
+						linkerTool.addFlag("-l" + file.getName().replace("lib", "").replace(".a", ""));
+					else
+						linkerTool.addFlag(file.getAbsolutePath());
+
 				if(linker.get("script") != null)
 					linkerTool.addFlag(" -T" + ((String) linker.get("script")));
 				else {
 					FilesSearch startupFiles = new FilesSearch("target/mind-dependencies/startup", "([^\\s]+(\\.(?i)(ld))$)");
-					
+
 					List<File> files = startupFiles.getFilesList();
-					
+
 					if(files.size() > 1) {
 						getLog().error("Too much link scripts found:");
-						
+
 						for(File file : files)
 							getLog().error(file.getAbsolutePath());
 					}
@@ -260,14 +256,6 @@ public class MindAdlMojo extends AbstractMojo {
 					else
 						getLog().info("No link script found");
 				}
-				
-				FilesSearch libFiles = new FilesSearch("target/mind-dependencies", "([^\\s]+(\\.(?i)(a))$)");
-				
-				for(File directory : libFiles.getDirectoriesList())
-					linkerTool.addFlag("-L" + directory.getAbsolutePath());
-				
-				for(File file : libFiles.getFilesList())
-					linkerTool.addFlag("-l" + file.getName().replace("lib", "").replace(".a", ""));
 			}
 
 			if(linkerTool.getCommand() != null)
@@ -334,7 +322,7 @@ public class MindAdlMojo extends AbstractMojo {
 
 		if (dep.isDirectory()) {
 			commandBuilder.addToSrcPath(new File("target/mind-dependencies/mind"));
-			
+
 			PathDependencies srcPathDependencies =  new PathDependencies();
 
 			// Looking for all directories containing .c files
